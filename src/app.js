@@ -1,77 +1,109 @@
 const express = require("express")
+const {
+  adminAuthMiddleware,
+  userAuthMiddleware,
+} = require("./Middlewares/authMiddleware")
 
 const app = express()
 
-app.get("/user/:userId/:test", (req, res) => {
-  console.log(req.query)
-  res.send({
-    firstName: "teja",
-    lastname: "Yellam",
-  })
+//app.[get,post,delete,patch,etc...](rH1,[rH2,rH3],rH4,rH5)
+
+/** app.post(
+  "/route",
+  (req, res, next) => {
+    console.log("Route Handler 1")
+    //res.send("ROUTE HANDLER 1")
+    next()
+  },
+  [
+    (req, res, next) => {
+      console.log("Route Handler 2")
+      //res.send("ROUTE HANDLER 2")
+      next()
+    },
+    (req, res, next) => {
+      console.log("Route Handler 3")
+      //res.send("ROUTE HANDLER 3")
+      next()
+    },
+    (req, res, next) => {
+      console.log("Route Handler 4")
+      res.send("ROUTE HANDLER 4")
+      //next()
+    },
+  ],
+  (req, res, next) => {
+    console.log("Route Handler 5")
+    res.send("ROUTE HANDLER 5")
+    // next()
+  }
+)
+*/
+
+// app.use("/", (req, res, next) => {
+//   next()
+// })
+
+// app.use("/", (req, res, next) => {
+//   res.send("out the box")
+// })
+
+// app.get(
+//   "/user",
+//   (req, res, next) => {
+//     console.log("Handling user route")
+//     next()
+//   },
+//   (req, res, next) => {
+//     console.log("MiddleWare - 1")
+//     // res.send("Route Handing 1")
+//     next()
+//   },
+//   (req, res, next) => {
+//     console.log("MiddleWare - 2")
+//     // res.send("Route Handing 2")
+//     next()
+//   },
+//   (req, res, next) => {
+//     console.log("Last Request Handler")
+//     //res.send("Route Handing 3")
+//     next()
+//   }
+// )
+
+app.use("/admin", adminAuthMiddleware)
+
+app.get("/admin/getAdminDetails", (req, res) => {
+  res.send("Admin Details are received")
 })
 
-app.get(/.*fly$/, (req, res) => {
-  console.log(req.query)
-  res.send({
-    firstName: "Raviteja",
-    lastname: "Yellam",
-  })
+app.get("/admin/deleteAdminDetails", (req, res) => {
+  res.send("Admin Details are Deleted")
 })
 
-console.log("Hello")
 
-const cb0 = function (req, res, next) {
-  console.log('CB0')
-  next()
-}
 
-const cb1 = function (req, res, next) {
-  console.log('CB1')
-  next()
-}
 
-app.get('/example/d', [cb0, cb1], (req, res, next) => {
-  console.log('the response will be sent by the next function ...')
-  next()
-}, (req, res) => {
-  res.send('Hello from D!')
-}) 
+app.use("/user", userAuthMiddleware)
 
-// app.get("/user", (req, res) => {
-//   res.send({
-//     firstName: "Raviteja",
-//     lastname: "Yellam",
-//   })
-// })
 
-// app.post("/user", (req, res) => {
-//   res.send("Data successfully sent to Database")
-// })
+app.get("/user/login",(req,res)=>{
 
-// app.delete("/user", (req, res) => {
-//   res.send("Data successfully deleted")
-// })
-
-// app.patch("/user", (req, res) => {
-//   res.send("Data successfully patched")
-// })
-
-// app.use("/hell", (req, res) => res.send("HELLO 2 ROUTE"))
-
-// app.use("/hello", (req, res) => res.send("HELLO HELLO  ROUTE"))
-// app.use("/test/45", (req, res) => res.send("HELLO FROM FIRST TEST ROUTE"))
-
-// app.use("/test", (req, res) => {
-//   res.send("HELLO FROM TEST ROUTE")
-// })
-
-app.use("/user", (req, res) => {
-  res.send("USER IS OUR DATA")
+  res.send("You have successfully logged in")
 })
 
-// app.use("/", (req, res) => {
-//   res.send("Hello from server")
-// })
+
+app.get("/user/userDetails", (req, res) => {
+  res.send("user Details are sent")
+})
+
+app.post("/user/message", (req, res) => {
+  res.send("Message successfully posted")
+})
+
+app.delete("/user/post", (req, res) => {
+  res.send("post successfully deleted")
+})
 
 app.listen(4000, () => {
   console.log("sucessfully initiated server")
