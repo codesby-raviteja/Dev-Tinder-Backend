@@ -71,39 +71,79 @@ const app = express()
 //   }
 // )
 
-app.use("/admin", adminAuthMiddleware)
+// app.use("/admin", adminAuthMiddleware)
 
-app.get("/admin/getAdminDetails", (req, res) => {
-  res.send("Admin Details are received")
+// app.get("/admin/getAdminDetails", (req, res) => {
+//   res.send("Admin Details are received")
+// })
+
+// app.get("/admin/deleteAdminDetails", (req, res) => {
+//   res.send("Admin Details are Deleted")
+// })
+
+// app.use("/user", userAuthMiddleware)
+
+// app.get("/user/login",(req,res)=>{
+
+//   res.send("You have successfully logged in")
+// })
+
+// app.get("/user/userDetails", (req, res) => {
+//   res.send("user Details are sent")
+// })
+
+// app.post("/user/message", (req, res) => {
+//   res.send("Message successfully posted")
+// })
+
+// app.delete("/user/post", (req, res) => {
+//   res.send("post successfully deleted")
+// })
+
+// app.use("/admin", (req, res,t) => {
+//   console.log("############");
+//  // res.send("ADMIN is logged IN")
+//  t(1)
+// })
+
+// app.get("/admin/getDetails", (req, res,next) => {
+//   res.send("ADMIN Details are sent")
+
+// })
+
+// app.get("/user", (req, res,next) => {
+//   // res.send("user Details are sent")
+//   next()
+// })
+
+// app.get("/user/message", (req, res) => {
+//   res.send("Message successfully posted")
+// })
+
+// app.use("/user", (req, res, next) => {
+//   throw Error("something went wrong")
+//   res.send("got user data")
+//   next()
+// })
+
+
+app.use("/user", ( req, res, next) => {
+  throw Error("something went wrong")
+  console.log('HELLO ###');
+  res.send("gott user data")
+  // next(err)
 })
 
-app.get("/admin/deleteAdminDetails", (req, res) => {
-  res.send("Admin Details are Deleted")
+app.use("/", ( err,req, res, next) => {
+  console.log("hello")
+  // res.send("THIS IS THE ERROR HANDLING")
+  // next(err)
 })
 
-
-
-
-app.use("/user", userAuthMiddleware)
-
-
-app.get("/user/login",(req,res)=>{
-
-  res.send("You have successfully logged in")
-})
-
-
-app.get("/user/userDetails", (req, res) => {
-  res.send("user Details are sent")
-})
-
-app.post("/user/message", (req, res) => {
-  res.send("Message successfully posted")
-})
-
-app.delete("/user/post", (req, res) => {
-  res.send("post successfully deleted")
-})
+// app.use("/", (err, req, res, next) => {
+//   console.log("HELLOW ERRORs")
+//   res.send(err.message)
+// })
 
 app.listen(4000, () => {
   console.log("sucessfully initiated server")
