@@ -87,11 +87,23 @@ app.delete("/user", async (req, res) => {
 })
 
 //Update the user by Id
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId
   const updateObj = req.body
 
   try {
+    const UPDATE_OPTIONS = ["skills", "age", "description", "gender"]
+
+    const isUpdatable = Object.keys(updateObj).every((key) =>
+      UPDATE_OPTIONS.includes(key)
+    )
+    if (!isUpdatable) {
+      throw new Error("You cannot update the details")
+    }
+    if (updateObj.skills.length > 10) {
+      throw new Error("Skills cannot be more than 10")
+    }
+
     // const a = await User.findByIdAndUpdate(userId, updateObj)
     const a = await User.findByIdAndUpdate({ _id: userId }, updateObj)
 
@@ -100,26 +112,26 @@ app.patch("/user", async (req, res) => {
 
     res.send("user successfully updated")
   } catch (err) {
-    res.status(404).send("Something went wrong.")
+    res.status(404).send("Something went wrong." + err.message)
   }
 })
 
 //Update the user by Email id
-app.patch("/updateuserbyemailld", async (req, res) => {
-  const userEmail = req.body.emailId
-  const userObj = req.body
+// app.patch("/updateuserbyemailld", async (req, res) => {
+//   const userEmail = req.body.emailId
+//   const userObj = req.body
 
-  try {
-    const a = await User.findOneAndUpdate({ emailId: userEmail }, userObj, {
-      returnDocument: "after",
-      lean: true,
-    })
-    console.log(a)
-    res.send("user updated successfully")
-  } catch (err) {
-    res.status(404).send("Something went wrong.")
-  }
-})
+//   try {
+//     const a = await User.findOneAndUpdate({ emailId: userEmail }, userObj, {
+//       returnDocument: "after",
+//       lean: true,
+//     })
+//     console.log(a)
+//     res.send("user updated successfully")
+//   } catch (err) {
+//     res.status(404).send("Something went wrong.")
+//   }
+// })
 
 connectDB()
   .then(() => {
