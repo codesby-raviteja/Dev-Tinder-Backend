@@ -8,9 +8,11 @@ const userSchema = new mongoose.Schema(
       require: true,
       minLength: 4,
       maxLength: 50,
+      trim: true,
     },
     lastName: {
       type: String,
+      trim: true,
     },
     emailId: {
       type: String,
@@ -47,7 +49,7 @@ const userSchema = new mongoose.Schema(
     description: {
       type: String,
       default: "This is the default description about you.",
-      minLength: 500,
+      maxLength: 500,
     },
     skills: [{ type: String }],
   },
