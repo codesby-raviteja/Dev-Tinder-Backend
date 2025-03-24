@@ -3,11 +3,15 @@ const connectDB = require("./config/database")
 const User = require("./Models/user")
 const { validateSignupData } = require("./utils/validations")
 const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
+const { userAuth } = require("./Middlewares/userAuth")
 
 const app = express()
 
 //to convert/parse the request Object into Js Object
 app.use(express.json())
+app.use(cookieParser())
 
 //Signingup the user
 app.post("/signup", async (req, res) => {
@@ -41,20 +45,29 @@ app.post("/login", async (req, res) => {
   const { emailId, password } = req.body
 
   try {
-    const user = await User.findOne({ emailId })
+    const user = await User.findOne({ emailId: emailId.toLowerCase() })
     if (!user) {
       throw new Error("Invalid Credentials")
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, user.password)
-    if (isPasswordMatched) {
+    const isPasswordValid = await user.validatePassword(password)
+
+    if (isPasswordValid) {
+      const token = await user.getJWT()
+
+      res.cookie("token", token, { expires: new Date(Date.now() + 900000) })
       res.send("Login Successfull")
     } else {
-      res.send("Invalid Credentials")
+      throw new Error("Invalid Credentials")
     }
   } catch (err) {
     res.status(404).send("Error: " + err.message)
   }
+})
+
+app.get("/profile", userAuth, async (req, res) => {
+  const user = req.user
+  res.send(user)
 })
 
 //Get user by emailId
@@ -73,100 +86,10 @@ app.get("/user", async (req, res) => {
   }
 })
 
-//Feed Api to get all the users of matching emailId,firstName,etc...
-app.get("/feed", async (req, res) => {
-  const userEmail = req.body.emailId
-
-  try {
-    const users = await User.find({ emailId: userEmail })
-    if (!users.length > 0) {
-      //  res.send(users)
-      res.send("No user found")
-    } else {
-      res.send(users)
-    }
-  } catch (err) {
-    res.status(400).sent
-  }
+app.post("/sendconnectionrequest", userAuth, (req, res) => {
+  const user = req.user
+  res.send(user.firstName + " sending connection")
 })
-
-//get user by Id
-app.get("/getuserbyId", async (req, res) => {
-  const userId = req.body.userId
-
-  try {
-    const user = await User.findById(userId)
-    console.log(user)
-    if (!user) {
-      res.send("No user found")
-    } else {
-      res.send(user)
-    }
-  } catch (err) {
-    console.log(err)
-    res.status(404).send("Error in getting user data.")
-  }
-})
-
-//Delete the user
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId
-
-  try {
-    const a = await User.findByIdAndDelete(userId)
-    console.log(a)
-    res.send("user successfully deleted")
-  } catch (err) {
-    res.status(400).send("Something went wrong")
-  }
-})
-
-//Update the user by Id
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params.userId
-  const updateObj = req.body
-
-  try {
-    const UPDATE_OPTIONS = ["skills", "age", "description", "gender"]
-
-    const isUpdatable = Object.keys(updateObj).every((key) =>
-      UPDATE_OPTIONS.includes(key)
-    )
-    if (!isUpdatable) {
-      throw new Error("You cannot update the details")
-    }
-    if (updateObj.skills.length > 10) {
-      throw new Error("Skills cannot be more than 10")
-    }
-
-    // const a = await User.findByIdAndUpdate(userId, updateObj)
-    const a = await User.findByIdAndUpdate({ _id: userId }, updateObj)
-
-    //  by default returned the previous document (before update)
-    // console.log(a)
-
-    res.send("user successfully updated")
-  } catch (err) {
-    res.status(404).send("Something went wrong." + err.message)
-  }
-})
-
-//Update the user by Email id
-// app.patch("/updateuserbyemailld", async (req, res) => {
-//   const userEmail = req.body.emailId
-//   const userObj = req.body
-
-//   try {
-//     const a = await User.findOneAndUpdate({ emailId: userEmail }, userObj, {
-//       returnDocument: "after",
-//       lean: true,
-//     })
-//     console.log(a)
-//     res.send("user updated successfully")
-//   } catch (err) {
-//     res.status(404).send("Something went wrong.")
-//   }
-// })
 
 connectDB()
   .then(() => {
