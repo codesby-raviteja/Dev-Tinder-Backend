@@ -1,0 +1,25 @@
+
+APIs
+
+POST/signup
+POST/login
+POST/logout
+
+
+GET/profile
+PATCH/profile
+PATCH/profile/password
+
+POST/req/send/intrested/:userId
+POST/req/send/ignored/:userId
+
+
+POST/req/review/accepted/:userId
+POST/req/review/rejected /:userId
+
+
+GET/connections
+GET/requests/
+
+
+GET/core

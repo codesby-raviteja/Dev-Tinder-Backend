@@ -3,7 +3,6 @@ const validator = require("validator")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
-
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -48,6 +47,16 @@ const userSchema = new mongoose.Schema(
           throw new Error()
         }
       },
+    },
+    imageUrl: {
+      type: String,
+      default:
+        "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
+      validate(value){
+        if(!validator.isURL(value)){
+          throw new Error("Please upload a valid image url")
+        }
+      }
     },
     description: {
       type: String,

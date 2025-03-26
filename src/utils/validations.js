@@ -19,4 +19,47 @@ const validateSignupData = (req) => {
   }
 }
 
-module.exports = { validateSignupData }
+const validateEditData = (req) => {
+  const { firstName, lastName, age, description, skills, imageUrl } = req.body
+
+  let allFieldsSatisfied = true
+
+  const editableFields = [
+    "firstName",
+    "lastName",
+    "skills",
+    "description",
+    "age",
+    "imageUrl",
+  ]
+
+  const isEditable = Object.keys(req.body).every((field) =>
+    editableFields.includes(field)
+  )
+  if (
+    (firstName && firstName.length < 4) ||
+    (lastName && lastName.length < 4)
+  ) {
+    allFieldsSatisfied = false
+  } else if (imageUrl && !validator.isURL(imageUrl)) {
+    allFieldsSatisfied = false
+  } else if (skills && skills.length > 10) {
+    allFieldsSatisfied = false
+  } else if (description && description.length > 500) {
+    allFieldsSatisfied = false
+  }
+
+  return isEditable && allFieldsSatisfied
+}
+
+const validatePasswordEdit = (req) => {
+  const { password, newPassword } = req.body
+
+  if (!password || !newPassword) {
+    throw new Error("Please enter  password")
+  }
+  const isPasswordStrong = validator.isStrongPassword(newPassword)
+  return isPasswordStrong
+}
+
+module.exports = { validateSignupData, validateEditData, validatePasswordEdit }
