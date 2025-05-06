@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt")
 
 const authRouter = express.Router()
 
+
+
 authRouter.post("/signup", async (req, res) => {
   try {
     validateSignupData(req)
@@ -20,16 +22,23 @@ authRouter.post("/signup", async (req, res) => {
       password: passwordHash,
     })
 
-    await user.save()
+    const savedUser = await user.save()
 
-    res.send("User successfully signed up")
+    const token = await savedUser.getJWT()
+
+    res.cookie("token", token, { expires: new Date(Date.now() + 8 * 900000) })
+
+    res.json({ message: "User successfully signed up", data: savedUser })
   } catch (err) {
     res.status(400).send("ERROR: " + err.message)
   }
 })
 
+
+
 authRouter.post("/login", async (req, res) => {
   const { emailId, password } = req.body
+
   try {
     const user = await User.findOne({ emailId: emailId.toLowerCase() })
     if (!user) {
@@ -41,7 +50,7 @@ authRouter.post("/login", async (req, res) => {
     } else {
       const token = await user.getJWT()
       res.cookie("token", token, { expires: new Date(Date.now() + 8 * 900000) })
-      res.send("Login Successfull")
+      res.send(user)
     }
   } catch (err) {
     res.status(404).send("Error: " + err.message)

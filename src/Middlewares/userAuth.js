@@ -3,9 +3,9 @@ const User = require("../Models/user")
 
 const userAuth = async (req, res, next) => {
   try {
-    const { token } = req.cookies 
+    const { token } = req.cookies
     if (!token) {
-      throw new Error("Invalid Token")
+      return res.status(401).send("Please Login to your account")
     }
     const decryptObj = await jwt.verify(token, "DEV_tinder@532")
     const userObj = await User.findById(decryptObj._id)

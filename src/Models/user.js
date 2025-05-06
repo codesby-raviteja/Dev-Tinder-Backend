@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
       require: true,
       trim: true,
       lowercase: true,
+      unique: true,
       validate(value) {
         if (!validator.isEmail(value)) {
           throw new Error("Email is not Valid")
@@ -52,11 +53,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
-      validate(value){
-        if(!validator.isURL(value)){
+      validate(value) {
+        if (!validator.isURL(value)) {
           throw new Error("Please upload a valid image url")
         }
-      }
+      },
     },
     description: {
       type: String,

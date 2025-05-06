@@ -1,6 +1,6 @@
 const validator = require("validator")
 
-const validateSignupData = (req) => {
+const  validateSignupData = (req) => {
   const { firstName, lastName, password, emailId } = req.body
 
   if (!firstName || !lastName) {
@@ -31,6 +31,7 @@ const validateEditData = (req) => {
     "description",
     "age",
     "imageUrl",
+    "gender"
   ]
 
   const isEditable = Object.keys(req.body).every((field) =>

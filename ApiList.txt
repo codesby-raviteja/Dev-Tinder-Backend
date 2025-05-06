@@ -18,11 +18,11 @@ POST/req/review/accepted/:userId
 POST/req/review/rejected /:userId
 
 
-GET/connections
-GET/requests/
+GET/user/requests/received
+GET/user/connections
+GET/user/ core
 
 
-GET/core
 
 
 

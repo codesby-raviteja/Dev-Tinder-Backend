@@ -20,7 +20,7 @@ requestRoute.post(
           .status(400)
           .json({ message: "invalid status type: " + status })
       }
-      
+
       const toUser = await User.findById(toUserId)
       if (!toUser) {
         throw new Error("User does not exists")
@@ -58,8 +58,36 @@ requestRoute.post(
   }
 )
 
+requestRoute.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user
+      const { status, requestId } = req.params
+      const allowedStatus = ["accepted", "rejected"]
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: "Invalid Status type" })
+      }
+      const connectionRequest = await ConnectionRequest.findOne({
+        fromUserId: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      })
+      
+      if (!connectionRequest) {
+        return res
+          .status(400)
+          .json({ message: "connection request does not exists" })
+      }
 
-
-
+      connectionRequest.status = status
+      const data = await connectionRequest.save()
+      res.status(200).json({ message: "connection accepted", data })
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+  }
+)
 
 module.exports = requestRoute
