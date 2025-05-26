@@ -11,23 +11,15 @@ const userRouter = require("./routes/user")
 const app = express()
 const allowedOrigins = ["http://localhost:5173"]
 
+// cors({credentials:})
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true) // allow non-browser clients like Postman
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true)
-      } else {
-        return callback(new Error("Not allowed by CORS"))
-      }
-    },
-    credentials: true, // VERY IMPORTANT
+    origin: allowedOrigins[0],
+    credentials: true,
   })
 )
-//   // cors({
-//   //   credentials:true
-//   // })
-// )
+
+
 
 app.use(express.json())
 app.use(cookieParser())
