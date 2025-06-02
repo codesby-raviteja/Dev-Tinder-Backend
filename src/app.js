@@ -9,7 +9,8 @@ const requestRoute = require("./routes/requests")
 const userRouter = require("./routes/user")
 
 const app = express()
-const allowedOrigins = ["http://localhost:5173"]
+//const allowedOrigins = ["http://localhost:5173"]
+const allowedOrigins = ["http://localhost:80"]
 
 // cors({credentials:})
 app.use(
