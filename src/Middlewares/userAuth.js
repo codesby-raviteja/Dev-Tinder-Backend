@@ -7,7 +7,7 @@ const userAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).send("Please Login to your account")
     }
-    const decryptObj = await jwt.verify(token, "DEV_tinder@532")
+    const decryptObj = await jwt.verify(token, process.env.JWT_SECRET)
     const userObj = await User.findById(decryptObj._id)
     if (!userObj) {
       throw new Error("User does not exits")
